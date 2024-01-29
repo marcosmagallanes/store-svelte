@@ -3,7 +3,6 @@
 
 	/** @type {import('./$types').PageServerData} */
 	export let data;
-	console.log(data);
 </script>
 
 <section class="prose">
@@ -15,9 +14,9 @@
 			<li class="grid gap-1">
 				<div class="relative">
 					<img
-						src={`https://store-pocketbase.fly.dev/api/files/${item.collectionId}/${item.id}/${item.imageURL}?thumb=200x200`}
+						src={`https://store-pocketbase.fly.dev/api/files/${item.collectionId}/${item.id}/${item.imageURL}?thumb=300x300`}
 						alt={item.name}
-						class="rounded-lg"
+						class="h-full w-full rounded-lg"
 					/>
 					<button
 						class="absolute bottom-4 right-4 rounded border-2 border-stone-300 bg-white p-2 shadow-2xl hover:bg-stone-100"
