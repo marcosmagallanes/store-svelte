@@ -2,6 +2,7 @@ import { fail, error, redirect } from '@sveltejs/kit'
 
 export const actions = {
     signup: async ({ locals, request }) => {
+        console.log("Sign up")
 
         const form = Object.fromEntries(await request.formData())
 
@@ -15,6 +16,7 @@ export const actions = {
         throw redirect(303, '/auth')
     },
     login: async ({ locals, request }) => {
+        console.log("Login")
         const form = Object.fromEntries(await request.formData())
 
         try {
@@ -35,6 +37,8 @@ export const actions = {
         throw redirect(303, '/account')
     },
     reset: async ({ request, locals }) => {
+        console.log("Reset")
+
         const form = Object.fromEntries(await request.formData())
 
         try {

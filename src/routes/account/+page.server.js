@@ -1,9 +1,17 @@
-export const load = ({ locals }) => {
-    if (locals.user) {
-        return {
-            user: locals.user
-        }
+import { redirect } from '@sveltejs/kit';
+
+export async function load({ locals }) {
+
+    if (!locals.pb.authStore.isValid) {
+        return redirect(302, '/auth');
     }
 
-    return { user: undefined }
+    const orders = await locals.pb.collection('orders').getFullList({
+        sort: '-created',
+        expand: 'orderItems'
+    });
+    return {
+        orders,
+        user: locals.user
+    }
 }

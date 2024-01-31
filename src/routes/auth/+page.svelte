@@ -3,8 +3,15 @@
 	import { cubicOut, cubicIn } from 'svelte/easing';
 	import { ArrowLeft } from 'lucide-svelte';
 
+	import { Input } from '$lib/components/ui/Input';
+	import { Label } from '$lib/components/ui/Label';
+	import { Button } from '$lib/components/ui/button';
+
+	import { buttonVariants } from '$lib/components/ui/button';
+
 	let isSignUp = false;
 	let isForgotPassword = false;
+	let noAccountButton = false;
 
 	export let form;
 </script>
@@ -25,29 +32,70 @@
 		out:fly={{ easing: cubicIn, x: -20, duration: 300 }}
 		method="POST"
 		action="?/signup"
-		class="sticky grid place-items-center gap-3 *:w-1/2"
 	>
-		<label>
-			<span>Email</span>
-			<input name="email" type="email" placeholder="Email" value="ahmed.mohsen@gmail.com" />
-		</label>
-		<label>
-			<span>Full Name</span>
-			<input name="name" type="text" placeholder="Full Name" value="ahmed mohsen" />
-		</label>
-		<label>
-			<span>Password</span>
-			<input name="password" type="password" placeholder="Password" value="pewpew" />
-		</label>
-		<label>
-			<span>Confirm Password</span>
-			<input name="passwordConfirm" type="password" placeholder="Confirm Password" value="pewpew" />
-		</label>
-		<div class="flex gap-3">
-			<button on:click|preventDefault={() => (isSignUp = !isSignUp)} class="form-button"
-				><ArrowLeft /></button
+		<div>
+			<Label for="email">Email</Label>
+			<Input
+				id="email"
+				name="email"
+				type="email"
+				placeholder="Email"
+				value="ahmed.mohsen@gmail.com"
+			/>
+		</div>
+		<div>
+			<Label for="name">Full Name</Label>
+			<Input id="name" name="name" type="text" placeholder="Full Name" value="ahmed mohsen" />
+		</div>
+		<div>
+			<Label for="password">Password</Label>
+			<Input id="password" name="password" type="password" placeholder="Password" value="pewpew" />
+		</div>
+		<div>
+			<Label for="passwordConfirm">Confirm Password</Label>
+			<Input
+				id="passwordConfirm"
+				name="passwordConfirm"
+				type="password"
+				placeholder="Confirm Password"
+				value="pewpew"
+			/>
+		</div>
+		<div class="grid grid-cols-4 gap-3">
+			<button
+				class={`${buttonVariants({ variant: 'outline' })} col-span-1`}
+				on:click|preventDefault={() => (isSignUp = !isSignUp)}><ArrowLeft /></button
 			>
-			<button class="form-button grow">Sign Up</button>
+			<button class={`${buttonVariants({ variant: 'default' })} col-span-3`}>Sign Up</button>
+		</div>
+	</form>
+{:else if !isForgotPassword}
+	<form
+		in:fly={{ easing: cubicOut, x: 20, duration: 300, delay: 300 }}
+		out:fly={{ easing: cubicIn, x: -20, duration: 300 }}
+		method="POST"
+		action="?/login"
+	>
+		<div>
+			<Label for="email">Email</Label>
+			<Input id="email" name="email" type="email" placeholder="Email" />
+		</div>
+		<div>
+			<Label for="password">Password</Label>
+			<Input id="password" name="password" type="password" placeholder="Password" />
+		</div>
+		<div>
+			<button class={buttonVariants({ variant: 'default' })}>Login</button>
+			<button
+				class={buttonVariants({ variant: 'outline' })}
+				on:click|preventDefault={() => (isSignUp = !isSignUp)}>Sign Up</button
+			>
+			<hr />
+			<button
+				class={buttonVariants({ variant: 'ghost' })}
+				on:click|preventDefault={() => (isForgotPassword = !isForgotPassword)}
+				>Forgot Password?</button
+			>
 		</div>
 	</form>
 {:else}
@@ -55,50 +103,31 @@
 		in:fly={{ easing: cubicOut, x: 20, duration: 300, delay: 300 }}
 		out:fly={{ easing: cubicIn, x: -20, duration: 300 }}
 		method="POST"
-		action="?/login"
-		class="sticky grid place-items-center gap-3 *:w-1/2"
+		action="?/reset"
 	>
-		<label>
-			<span>Email</span>
-			<input name="email" type="email" placeholder="Email" />
-		</label>
-		{#if !isForgotPassword}
-			<label>
-				<span>Password</span>
-				<input name="password" type="password" placeholder="Password" />
-			</label>
-			<button class="form-button">Login</button>
-			<button on:click={() => (isForgotPassword = !isForgotPassword)} class="text-sm"
-				>Forgot Password?</button
+		<div>
+			<Label>Email</Label>
+			<Input name="email" type="email" placeholder="Email" />
+		</div>
+		<div class="grid grid-cols-4 gap-3">
+			<button
+				on:click|preventDefault={() => (isForgotPassword = !isForgotPassword)}
+				class={`${buttonVariants({ variant: 'outline' })} col-span-1`}><ArrowLeft /></button
 			>
-		{:else}
-			<div class="flex gap-3">
-				<button
-					on:click|preventDefault={() => (isForgotPassword = !isForgotPassword)}
-					class="form-button"><ArrowLeft /></button
-				>
-				<button formaction="?/reset" class="form-button grow">Request Reset</button>
-				{#if form?.success}
-					<p class="form-success">Email sent. Click the link in your mailbox. Check spam.</p>
-				{/if}
-			</div>
-		{/if}
-		<hr />
-		<span class="text-center"
-			>Don't have an account? <button
-				class="text-stone-400"
-				on:click|preventDefault={() => (isSignUp = !isSignUp)}>Sign Up</button
-			></span
-		>
+			<button class={`${buttonVariants({ variant: 'default' })} col-span-3`}>Request Reset</button>
+			{#if form?.success}
+				<p class="form-success">Email sent. Click the link in your mailbox. Check spam.</p>
+			{/if}
+		</div>
 	</form>
 {/if}
 
 <style lang="postcss">
-	label {
-		@apply grid;
+	form {
+		@apply sticky grid place-items-center gap-3;
 	}
-	label span {
-		@apply text-sm;
+	form div {
+		@apply grid w-full max-w-sm items-center gap-1.5;
 	}
 	.form-button {
 		@apply rounded bg-stone-700 p-3 text-white;

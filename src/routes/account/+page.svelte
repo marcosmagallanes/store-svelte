@@ -1,13 +1,39 @@
-<script>
+<script lang="ts">
 	export let data;
+	import DataTable from './data-table.svelte';
+	import * as Card from '$lib/components/ui/card';
+	import * as Tooltip from '$lib/components/ui/tooltip';
+	import { ShieldCheck, ShieldQuestion } from 'lucide-svelte';
 </script>
 
-{#if !data.user}
-	<h1>Please log in :I</h1>
-{:else}
-	<p>{data.user.name}</p>
-	<p>{data.user.username}</p>
-	<p>verified: {data.user.verified}</p>
+<div class="container mx-auto grid gap-5 py-10">
+	<Card.Root>
+		<Card.Header>
+			<Card.Title>
+				<Tooltip.Root>
+					<Tooltip.Trigger>
+						{data.user.name}
+					</Tooltip.Trigger>
+					<Tooltip.Content>
+						<p>{data.user.username}</p>
+					</Tooltip.Content>
+				</Tooltip.Root>
+			</Card.Title>
+			<Card.Description>
+				<p class="flex items-center gap-2">
+					{#if data.user.verified}
+						<ShieldCheck /> Verified
+					{:else}
+						<ShieldQuestion /> Not verified
+					{/if}
+				</p>
+			</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<p>User since: {new Date(data.user.created).toLocaleDateString()}</p>
+		</Card.Content>
+		<Card.Footer></Card.Footer>
+	</Card.Root>
 
-	<p>account created: {new Date(data.user.created).toLocaleDateString()}</p>
-{/if}
+	<DataTable orders={data.orders} />
+</div>

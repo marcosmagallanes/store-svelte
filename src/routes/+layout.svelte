@@ -1,39 +1,70 @@
 <script>
-	import { fade } from 'svelte/transition';
-	import '../app.css';
+	import '../app.pcss';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Button } from '$lib/components/ui/button';
+
 	import { User, LogOut, ShoppingBasket, Menu, Home } from 'lucide-svelte';
 
-	let isMenuOpen = false;
+	function logout() {
+		fetch('/logout', {
+			method: 'POST',
+			redirect: 'manual'
+		}).then((response) => {
+			if (response.type == 'opaqueredirect') {
+				window.location.replace('/auth');
+				return;
+			}
+		});
+	}
 
+	let isMenuOpen = false;
+	let isCartOpen = false;
 	export let data;
-	console.log(data);
 </script>
 
-<nav class="relative mb-5 flex items-center justify-between bg-stone-300 px-5 py-3">
+<nav class="relative m-5 flex items-center justify-between rounded-md bg-zinc-800 px-5 py-3">
 	<ul>
-		<a class="rounded-button" href="/"><Home /></a>
+		<Button variant="outline" href="/"><Home /></Button>
 	</ul>
 	<ul>
 		{#if !data.user}
-			<a href="/auth" class="rounded-button"><User /></a>
+			<Button variant="outline" href="/auth"><User /></Button>
 		{:else}
-			<a href="/cart" class="rounded-button"><ShoppingBasket /></a>
-			<button on:click|preventDefault={() => (isMenuOpen = !isMenuOpen)} class="rounded-button"
-				><User /></button
-			>
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger asChild let:builder>
+					<Button variant="outline" on:click={() => (isCartOpen = !isCartOpen)} builders={[builder]}
+						><ShoppingBasket /></Button
+					>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content sideOffset={16} class="w-fit">
+					<DropdownMenu.Group>
+						<DropdownMenu.Label>Cart</DropdownMenu.Label>
+						<DropdownMenu.Separator />
+						<DropdownMenu.Item href="/account">Account</DropdownMenu.Item>
+						<DropdownMenu.Item on:click={() => logout()}>Logout</DropdownMenu.Item>
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger asChild let:builder>
+					<Button variant="outline" on:click={() => (isMenuOpen = !isMenuOpen)} builders={[builder]}
+						><User /></Button
+					>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="end" sideOffset={16} class="w-fit">
+					<DropdownMenu.Group>
+						<DropdownMenu.Label class="capitalize">{data.user.name}</DropdownMenu.Label>
+						<DropdownMenu.Separator />
+					</DropdownMenu.Group>
+					<DropdownMenu.Group>
+						<DropdownMenu.Item href="/account">Account</DropdownMenu.Item>
+						<DropdownMenu.Item on:click={() => logout()}>Logout</DropdownMenu.Item>
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
 		{/if}
 	</ul>
-	{#if data.user}
-		{#if isMenuOpen}
-			<ol transition:fade={{ duration: 100 }}>
-				<li>{data.user.name}</li>
-				<hr />
-				<li><a href="/account">account</a></li>
-				<li><a href="/orders">orders</a></li>
-				<li><form action="/logout" method="post"><button type="submit">logout</button></form></li>
-			</ol>
-		{/if}
-	{/if}
 </nav>
 <main class="flex flex-col gap-5 p-5">
 	<slot />
@@ -42,11 +73,5 @@
 <style lang="postcss">
 	ul {
 		@apply flex items-center gap-3;
-	}
-	ol {
-		@apply absolute right-5 top-20 z-10 grid gap-1 rounded border-2 border-black bg-gray-300 px-3 py-1;
-	}
-	.rounded-button {
-		@apply rounded-md border-2 border-gray-700 px-3 py-2;
 	}
 </style>

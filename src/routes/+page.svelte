@@ -1,5 +1,8 @@
 <script>
-	import { PlusSquare } from 'lucide-svelte';
+	import * as Card from '$lib/components/ui/card';
+	import { Button } from '@/components/ui/button';
+	import { Plus } from 'lucide-svelte';
+	import { Badge } from '$lib/components/ui/badge';
 
 	/** @type {import('./$types').PageServerData} */
 	export let data;
@@ -12,19 +15,22 @@
 	<ol class="grid grid-cols-2 gap-5">
 		{#each data.items as item}
 			<li class="grid gap-1">
-				<div class="relative">
-					<img
-						src={`https://store-pocketbase.fly.dev/api/files/${item.collectionId}/${item.id}/${item.imageURL}?thumb=300x300`}
-						alt={item.name}
-						class="h-full w-full rounded-lg"
-					/>
-					<button
-						class="absolute bottom-4 right-4 rounded border-2 border-stone-300 bg-white p-2 shadow-2xl hover:bg-stone-100"
-						><PlusSquare /></button
-					>
-				</div>
-				<span class="text-2xl font-bold">{item.name}</span>
-				<span class="text-sm italic text-stone-600">{item.expand.categoryID.name}</span>
+				<Card.Root>
+					<Card.Header>
+						<span class="text-2xl font-bold">{item.name}</span>
+					</Card.Header>
+					<Card.Content class="relative">
+						<img
+							src={`https://store-pocketbase.fly.dev/api/files/${item.collectionId}/${item.id}/${item.imageURL}?thumb=300x300`}
+							alt={item.name}
+							class="rounded"
+						/>
+					</Card.Content>
+					<Card.Footer class="flex justify-between">
+						<Badge variant="outline">{item?.expand?.categoryID.name}</Badge>
+						<Button size="sm" variant="outline"><Plus /></Button>
+					</Card.Footer>
+				</Card.Root>
 			</li>
 		{/each}
 	</ol>
